@@ -30,10 +30,8 @@ end
 
 # https://www.google.com/finance/getprices?i=3600&p=20d&f=d,o,h,l,c,v&df=cpct&q=3333&x=HKG
 def calculate_for(ticker)
-  days = []
-  carr = []
-  prev = 0
-  diff = 0
+  days, current_day = [], []
+  prev, diff = 0, 0
 
   # Separate out per day
   # CSV.foreach("#{ticker}.csv") do |row|
@@ -41,11 +39,12 @@ def calculate_for(ticker)
     idx, close, high, low, open, volume = row.map { |r| r.to_f }
     diff = idx - prev
 
+    # idx is separated by 10
     if diff > 10
-      days << carr
-      carr = []
+      days << current_day
+      current_day = []
     else
-      carr << {
+      current_day << {
         idx: idx,
         close: close,
         high: high,
@@ -90,8 +89,7 @@ def calculate_for(ticker)
     # p "magnitude: #{magnitude.round(3)}, day_high: #{day_high}, day_low: #{day_low}, day_vol: #{day_vol}"
   end
 
-  p "Ticker: #{ticker}"
-  p "Total failed : #{fail_count}, Total sucesss: #{success_count}, Percentage: #{success_count*1.0/(success_count+fail_count)*100}"
+  puts "TICKER: #{ticker}, Total failed : #{fail_count}, Total sucesss: #{success_count}, Percentage: #{success_count*1.0/(success_count+fail_count)*100}"
 end
 
 tickers.each do |ticker|
