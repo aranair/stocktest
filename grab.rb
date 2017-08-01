@@ -59,14 +59,15 @@ def calculate_for(ticker)
   fail_count, success_count = 0, 0
   days.each do |day|
     second_hour = day[1]
-    vol = second_hour[:close] - second_hour[:open]
+    vol = second_hour[:high] - second_hour[:open]
     target = if vol > 0
-               second_hour[:close] * (1 - IMPLIED_VOL) # From uptrend to downtrend
+               second_hour[:high] * (1 - IMPLIED_VOL) # From uptrend to downtrend
              else
-               second_hour[:close] * (1 + IMPLIED_VOL) # From downtrend to uptrend
+               second_hour[:high] * (1 + IMPLIED_VOL) # From downtrend to uptrend
              end
 
-    # Starting from third hour, find high/low of each hour
+    # Starting from third hour, see if it is between low/high
+    # If found -> trade succeeded
     target_earliest_hour = nil
     day[2..-1].each_with_index do |hour, index|
       if target > hour[:low] and target < hour[:high]
