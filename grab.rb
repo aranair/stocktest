@@ -1,26 +1,26 @@
 require 'csv'
 require 'net/http'
 
-DAY_COUNT=40
-IMPLIED_VOL=0.005 # 1% underlying
+DAY_COUNT=20
+IMPLIED_VOL=0.00333 # 1% underlying
 
-EXCHANGE="HKG"
-tickers = [
-  '3333',
-  '0968',
-  '0836',
-  '3988',
-  '2318',
-  '1023',
-]
-
-# EXCHANGE="NASDAQ"
+# EXCHANGE="HKG"
 # tickers = [
-#   'GOOGL',
-#   'AMZN',
-#   'FB',
-#   'NFLX'
+#   '3333',
+#   '0968',
+#   '0836',
+#   '3988',
+#   '2318',
+#   '1023',
 # ]
+
+EXCHANGE="NASDAQ"
+tickers = [
+  'GOOGL',
+  'AMZN',
+  'FB',
+  'NFLX'
+]
 
 def curl_data(ticker)
   uri = URI("https://www.google.com/finance/getprices?i=3600&p=#{DAY_COUNT}d&f=d,o,h,l,c,v&df=cpct&q=#{ticker}&x=#{EXCHANGE}")
@@ -61,9 +61,9 @@ def calculate_for(ticker)
     second_hour = day[1]
     vol = second_hour[:high] - second_hour[:open]
     target = if vol > 0
-               second_hour[:high] * (1 - IMPLIED_VOL) # From uptrend to downtrend
+               second_hour[:close] * (1 - IMPLIED_VOL) # From uptrend to downtrend
              else
-               second_hour[:high] * (1 + IMPLIED_VOL) # From downtrend to uptrend
+               second_hour[:close] * (1 + IMPLIED_VOL) # From downtrend to uptrend
              end
 
     # Starting from third hour, see if it is between low/high
